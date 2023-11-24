@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>滚动警告</title>
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+      color: #f006;
+    }
+    body {
+      background-color: #000;
+    }
+    .side {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .warning {
+      font-size: 20vw;
+      font-weight: 600;
+      font-family: fantasy;
+    }
+    .vertical-roll {
+      width: 20vw;
+      height: 100vh;
+      writing-mode: vertical-lr;
+      overflow:hidden;
+      animation: roll 8s linear infinite;
+      user-select: none;
+    }
+    .filter {
+      position: absolute;
+      top: 0vh;
+      left: 0;
+      width: 100vw;
+      height: 10vh;
+      backdrop-filter: invert(90%);
+    }
+    @keyframes roll {
+      0% {
+        transform: translateY(-100%);
+      }
+      100% {
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <div class="side">
+      <div class="warning vertical-roll">WARNING</div>
+      <div class="warning vertical-roll">WARNING</div>
+    </div>
+    <div class="filter">
+
+    </div>
+  </div>
+</body>
+<script>
+
+</script>
+</html>
