@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<style>
+  * {
+    padding: 0;
+    margin: 0;
+  }
+  .bg {
+    height: 100vh;
+    width: 100vw;
+    background: #222;
+    position: relative;
+  }
+  .progress {
+    position: absolute;
+    bottom: 10vh;
+    left: 0px;
+    height: 5px;
+    width: 100vw;
+    background: yellow;
+  }
+  .text {
+    position: absolute;
+    bottom: 12vh;
+    left: 50px;
+    font-size: 36px;
+    background: yellow;
+  }
+  .loading {
+    position: absolute;
+    bottom: 6vh;
+    left: 50px;
+    font-size: 36px;
+    background: yellow;
+    font-family: FiraCode-VF,SweiSpringSugar-Black,sans-serif;
+  }
+</style>
+<body>
+  <div class="bg">
+    <div id="text" class="text"></div>
+    <div class="progress" id="pro"></div>
+    <div class="loading">加载中</div>
+  </div>
+</body>
+
+<script>
+  const pro = document.getElementById('pro');
+  const text = document.getElementById('text')
+  pro.animate([
+  {transform: `scaleX(${0})`}
+  ], {
+    duration: 0,
+    fill: "forwards",
+  })
+
+  let percentage = 0; 
+  let timer = setInterval(() => {
+    percentage += (Math.random() * 0.3);
+    text.innerHTML = `${percentage * 100}%`
+    if(percentage > 0.999) {
+      clearInterval(timer);
+      timer = null;
+      return;
+    }
+    pro.animate([
+    {transform: `scaleX(${percentage})`}
+    ], {
+      duration: 500,
+      fill: "forwards",
+    })
+  }, 1000)
+</script>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<script>
+  function getSteam(res) {
+    console.log(1123)
+    console.log(res)
+  }
+  function jsonp(req) {
+    var script = document.createElement('script');
+    var url = req.url + '&callback=' + req.callback.name;
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+}
+let myHeaders = new Headers({
+  'Access-Control-Allow-Origin': '*',
+  'Content-Type': 'text/plain'
+});
+myHeaders.append('Access-Control-Allow-Origin', '*');
+myHeaders.append('Access-Control-Allow-Credentials', 'true');
+myHeaders.append('Content-Type', 'application/json');
+
+
+
+  fetch("http://api.steampowered.com/IPlayerService/GetOwnedGames/v1?key=02E30808F5F4F93570FE6129293FEE9E&steamid=76561198063415364&include_appinfo=1", {
+    mode: "same-origin",
+    headers: myHeaders
+  }).then((res) => {
+    console.log('res', res)
+  })
+
+</script>
+<body>
+</body>
+</html>

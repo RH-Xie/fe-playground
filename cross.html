@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+  .cross {
+    backdrop-filter: invert(80%);
+
+  }
+  .vertical {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    height: 100vh;
+    width: 200px;
+  }
+  .horizontal {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    height: 200px;
+    width: 100vw;
+  }
+  .bg {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+  }
+  img {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    object-fit: cover;
+    object-position: center;
+  }
+</style>
+<body>
+  <div class="bg">
+    <img src="./img//image (1).webp" alt="">
+    <div id="v" class="cross vertical"></div>
+    <div id="h" class="cross horizontal"></div>
+  </div>
+</body>
+<script>
+  const v = document.getElementById("v")
+  const h = document.getElementById("h")
+  console.log("h.offsetWidth", h.offsetWidth)
+  v.animate([
+    {
+      transform: `translateX(-${window.innerWidth - h.offsetHeight}px)`
+    }
+  ], {
+    duration: 1200,
+    easing: 'ease-in-out',
+    fill: "forwards",
+  })
+  h.animate([
+    {
+      transform: `translateY(-${window.innerHeight - v.offsetWidth}px)`
+    }
+  ], {
+    duration: 1200,
+    easing: 'ease-in-out',
+    fill: "forwards",
+  })
+</script>
+</html>

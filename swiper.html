@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+</head>
+<style>
+  .swiper {
+    height: 100vh;
+  }
+</style>
+<body>
+  <!-- <div class="parent">
+    <div style="background-color:blanchedalmond;">123</div>
+    <div style="background-color:brown;">123</div>
+    <div style="background-color:blueviolet;">123</div>
+    <div style="background-color:cadetblue;">123</div>
+    <div style="background-color:bisque;">123</div>
+  </div> -->
+  <div class="swiper">
+    <div class="swiper-wrapper">
+      <div class="swiper-slide" style="background-color:blanchedalmond;">123</div>
+      <div class="swiper-slide" style="background-color:brown;">123</div>
+      <div class="swiper-slide" style="background-color:blueviolet;">123</div>
+      <div class="swiper-slide" style="background-color:cadetblue;">123</div>
+      <div class="swiper-slide" style="background-color:bisque;">123</div>
+    </div>
+  </div>
+</body>
+<script>
+  const swiper = new Swiper('.swiper', {
+  // Optional parameters
+  direction: 'vertical',
+  loop: true,
+  mousewheel: true,
+
+  // If we need pagination
+  pagination: {
+    el: '.swiper-pagination',
+  },
+
+  // Navigation arrows
+  navigation: {
+    nextEl: '.swiper-button-next',
+    prevEl: '.swiper-button-prev',
+  },
+
+  // And if we need scrollbar
+  scrollbar: {
+    el: '.swiper-scrollbar',
+  },
+});
+
+</script>
+</html>

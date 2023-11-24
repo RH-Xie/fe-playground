@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+    }
+    body {
+      background-color: #eee;
+    }
+    .page-title {
+      text-align: center;
+      margin-top: 6px;
+      margin-bottom: 6px;
+      background-color: #fff;
+    }
+    #main {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+    .card {
+      width: 180px;
+      background-color: #fff;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      padding: 10px;
+      overflow: hidden;
+    }
+    #col-1 {
+      width: 200px;
+      margin-right: 8px;
+    }
+    #col-2 {
+      width: 200px;
+    }
+    .img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center;
+    }
+    .title {
+      font-size: 16px;
+      font-weight: 500;
+    }
+    .desc {
+      font-size: 12px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <div class="page-title">瀑布流实现</div>
+    <div id="main" class="waterfall">
+      <div id="col-1"></div>
+      <div id="col-2"></div>
+    </div>
+  </div>
+
+</body>
+<script>
+  const col1 = document.getElementById('col-1');
+  const col2 = document.getElementById('col-2');
+  const loading = document.getElementById('loading')
+  const random_cards = []
+  const random_pics = ['1.jpg', '2.png','3.jpg', '4.png', '']
+  const num = Math.ceil(Math.random() * 19) + 1;
+  for(let i = 0; i < num; i++) {
+    console.log( col1.offsetHeight,  col2.offsetHeight)
+    const col = col1.offsetHeight > col2.offsetHeight ? col2 : col1
+    const card = document.createElement('div')
+    card.classList = ['card']
+    const img_url = random_pics[Math.floor(Math.random() * random_pics.length)]
+    const img = document.createElement('img')
+    img.classList = ['img']
+    !img_url && (img.style.display = 'none')
+    img_url && (img.src = `/img/${img_url}`)
+    const title = document.createElement('div')
+    title.innerText = '标题哦'
+    title.classList = ['title']
+    const desc = document.createElement('div')
+    desc.innerText = '文章表述文章表述文章表述文章表述文章表述'
+    desc.classList = ['desc']
+    card.appendChild(img)
+    card.appendChild(title)
+    card.appendChild(desc)
+    col.appendChild(card)
+  }
+</script>
+</html>

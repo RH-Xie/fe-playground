@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<style>
+  * {
+    padding: 0;
+    margin: 0;
+  }
+  .parent {
+    scroll-snap-type: y proximity;
+    scroll-snap-stop: always;
+    overflow-y: scroll;
+    height: 10vh;
+  }
+  .parent > div {
+    scroll-snap-align: center;
+    height: 10vh;
+    width: 100%;
+  }
+</style>
+<body>
+  <div class="parent">
+    <div style="background-color:blanchedalmond;">123</div>
+    <div style="background-color:brown;">123</div>
+    <div style="background-color:blueviolet;">123</div>
+    <div style="background-color:cadetblue;">123</div>
+    <div style="background-color:bisque;">123</div>
+  </div>
+</body>
+</html>
