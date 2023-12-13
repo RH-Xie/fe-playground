@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <canvas id="myCanvas"></canvas>
+</body>
+<script>
+  var canvas = document.getElementById('myCanvas');
+var ctx = canvas.getContext('2d');
+
+var boxA = {
+  x: 50,
+  y: canvas.height - 70,
+  width: 50,
+  height: 50,
+  speed: 2,
+  acceleration: 0.1
+};
+
+var boxB = {
+  x: canvas.width - 100,
+  y: canvas.height - 70,
+  width: 50,
+  height: 50,
+  speed: 2
+};
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // 碰撞箱A
+  ctx.beginPath();
+  ctx.rect(boxA.x, boxA.y, boxA.width, boxA.height);
+  ctx.fillStyle = 'red';
+  ctx.fill();
+
+  // 碰撞箱B
+  ctx.beginPath();
+  ctx.rect(boxB.x, boxB.y, boxB.width, boxB.height);
+  ctx.fillStyle = 'blue';
+  ctx.fill();
+
+  // 更新碰撞箱A的位置
+  boxA.x += boxA.speed;
+  boxA.speed += boxA.acceleration;
+
+  // 更新碰撞箱B的位置
+  boxB.x -= boxB.speed;
+
+  // 检查碰撞
+  if (boxA.x < boxB.x + boxB.width && boxA.x + boxA.width > boxB.x) {
+    console.log("BOOM");
+    boxA.speed = -boxA.speed;
+    boxB.speed = -boxB.speed;
+  }
+
+  requestAnimationFrame(draw);
+}
+
+draw();
+</script>
+</html>

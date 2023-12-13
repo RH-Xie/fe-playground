@@ -8,7 +8,7 @@
     * {
       padding: 0;
       margin: 0;
-      color: #f006;
+      color: #f004;
     }
     body {
       background-color: #000;
@@ -20,6 +20,15 @@
       height: 100vh;
       overflow: hidden;
     }
+    .header {
+      position: relative;
+      width: 1000vw;
+    }
+    .header > div {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
     .warning {
       font-size: 20vw;
       font-weight: 600;
@@ -30,7 +39,13 @@
       height: 100vh;
       writing-mode: vertical-lr;
       overflow:hidden;
-      animation: roll 8s linear infinite;
+      animation: v-roll 16s linear infinite;
+      user-select: none;
+    }
+    .horizontal-roll {
+      height: 20vh;
+      overflow:hidden;
+      animation: h-roll 4s linear infinite;
       user-select: none;
     }
     .filter {
@@ -41,25 +56,41 @@
       height: 10vh;
       backdrop-filter: invert(90%);
     }
-    @keyframes roll {
+    @keyframes v-roll {
       0% {
         transform: translateY(-100%);
       }
       100% {
-        transform: translateY(0);
+        transform: translateY(100%);
+      }
+    }
+    @keyframes h-roll {
+      0% {
+        transform: translateX(100%);
+      }
+      100% {
+        transform: translateX(-100%);
       }
     }
   </style>
 </head>
 <body>
   <div>
-    <div class="side">
+    <!-- <div class="side">
       <div class="warning vertical-roll">WARNING</div>
       <div class="warning vertical-roll">WARNING</div>
+    </div> -->
+    <div class="header">
+      <span class="warning horizontal-roll">WARNING11111111111111111</span>
+      <span class="warning horizontal-roll" style="">WARNING11111111111111111</span>
     </div>
-    <div class="filter">
+    <div style="background-color: #fff; width: 100px; overflow: hidden; word-break:keep-all; line-break:loose; white-space: pre;">
+      <span>这是一段轮播公告</span>
+      <span>这是一段轮播公告</span>
+    </div>
+    <!-- <div class="filter">
       
-    </div>
+    </div> -->
   </div>
 </body>
 <script>
