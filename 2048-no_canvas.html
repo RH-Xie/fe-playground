@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2048试验</title>
+</head>
+<style>
+  :root {
+    --offset: 5px;
+    --offset-0: calc(0px + var(--offset));
+    --offset-1: calc(90px + var(--offset));
+    --offset-2: calc(180px + var(--offset));
+    --offset-3: calc(270px + var(--offset));
+  }
+  #container {
+    width: 400px;
+    height: 400px;
+    background-color: #666;
+    padding: 20px;
+    position: relative;
+    box-sizing: border-box;
+  }
+
+  #container > * {
+    position: absolute;
+  }
+  .grid {
+    width: 80px;
+    height: 80px;
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+  }
+  .col[data-col="0"] {
+    transform: translateX(var(--offset-0));
+  }
+  .col[data-col="1"] {
+    transform: translateX(var(--offset-1));
+  }
+  .col[data-col="2"] {
+    transform: translateX(var(--offset-2));
+  }
+  .col[data-col="3"] {
+    transform: translateX(var(--offset-3));
+  }
+  .row[data-row="0"] {
+    transform: translateY(var(--offset-0));
+  }
+  .row[data-row="1"] {
+    transform: translateY(var(--offset-1));
+  }
+  .row[data-row="2"] {
+    transform: translateY(var(--offset-2));
+  }
+  .row[data-row="3"] {
+    transform: translateY(var(--offset-3));
+  }
+  .btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 80px;
+    height: 40px;
+    font-size: 24px;
+    background-color: rgb(203, 50, 50);
+    border-radius: 10px;
+    box-shadow: 0 0 8px 2px #f006;
+    color: #eee;
+    user-select: none;
+    cursor: pointer;
+  }
+</style>
+<body>
+  <div id="container">
+    <!-- <div class="col" data-col="3">
+      <div class="row grid" data-row="2"></div>
+    </div> -->
+  </div>
+  <div style="display: flex; justify-content: center; align-items: center">
+    <div class="btn" onclick="game_2048.push('left')">Left</div>
+    <div class="btn" onclick="game_2048.push('right')">Right</div>
+    <div class="btn" onclick="game_2048.push('up')">Up</div>
+    <div class="btn" onclick="game_2048.push('down')">Down</div>
+  </div>
+  <br>
+  <div class="btn" onclick="next()">Next</div>
+  <br>
+  <div class="btn" onclick="reset()">Reset</div>
+</body>
+<script>
+  const GRID = 4
+  function next() {
+    game_2048.gen()
+  }
+  function reset() {
+    game_2048.reset()
+  }
+  const game_2048 = {
+    content: [],
+    history: [],
+    color: [
+      '',
+      '#fff',
+      '#e2ff3d',
+      '#458fff',
+      '#e9d4ff',
+      '#ffae17',
+      '#ff5117',
+    ],
+    init: function() {
+      const rootEl = document.getElementById('container');
+      rootEl.replaceChildren();
+      const matrix = []
+      for(let i = 0; i < GRID; i++) {
+        const row = []
+        for(let j = 0; j < GRID; j++) {
+          const parentGridEl = document.createElement('div');
+          parentGridEl.classList = 'col'
+          parentGridEl.setAttribute('data-col', `${j}`)
+          const childGridEl = document.createElement('div');
+          childGridEl.classList = 'grid row'
+          childGridEl.setAttribute('data-row', `${i}`)
+          childGridEl.innerHTML = `${0}`
+          row.push(childGridEl)
+          parentGridEl.appendChild(childGridEl);
+          rootEl.appendChild(parentGridEl)    
+        }
+        matrix.push(row);
+      }
+      this.content = matrix;
+      console.log('this.content', this.content)
+    },
+    update: function(el, value) {
+      el.innerHTML = value
+      el.style.backgroundColor = this.color[value]
+    },
+    gen: function() {
+      const zeros = this.getZeros();
+      if(zeros.length === 0) {
+        alert('游戏结束')
+        console.log('游戏结束')
+        return;
+      }
+      const index = Math.floor(Math.random() * zeros.length)
+      const level = Math.floor(Math.random() * 6) + 1
+      this.update(zeros[index], level)
+    },
+    getZeros: function() {
+      const zeroDivs = []
+      this.content.forEach(row => row.forEach(col => col.innerHTML === '0' && zeroDivs.push(col)))
+      return zeroDivs
+    },
+    reset: function() {
+      this.init()
+    },
+    reverse: function(matrix) {
+      for(let i = 0; i < GRID; i++) {
+        for(let j = 0; j < GRID / 2; j++) {
+          [matrix[i][j], matrix[i][GRID - j]] = [matrix[i][GRID - j], matrix[i][j]]
+        }
+      }
+    },
+    /**
+    * @param {'up' | 'down' | 'left' | 'right'} direction
+    */
+    push: function(direction) {
+      const preProcess = [];
+      switch(direction) {
+        case 'up':
+        case 'down':
+          for(let j = 0; j < GRID; j++) {
+            const col = [];
+            for(let i = 0; i < GRID; i++) {
+              col.push(this.content[i][j])
+            }
+            preProcess.push(col);
+          }
+          break;
+        default: 
+          preProcess.splice(0, preProcess.length, ...this.content.slice());
+      }
+      if( ['right', 'down'].includes(direction)) {
+        this.reverse(preProcess);
+      }
+      preProcess.forEach(row => row.forEach((col, index) => {
+        if(col.innerHTML !== '0') return;
+        let i = index + 1;
+        
+        while(i < GRID && row[i].innerHTML === '0') {i++; console.log('row[i]', i, row[i])};
+        if(i < GRID) [col, row[i]] = [row[i], col];
+      }))
+      this.content.splice(0, this.content.length, ...preProcess.slice())
+      console.log('this.content', this.content)
+      //this.content.forEach(row => row.forEach(col => this.update(col, parseInt(col.innerHTML))))
+    },
+    merge: function() {
+
+    }
+  }
+  game_2048.init()
+</script>
+</html>
