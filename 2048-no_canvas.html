@@ -97,9 +97,6 @@
 </body>
 <script>
   const GRID = 4
-  window.addEventListener('keyup', (e) => {
-    console.log('e', e)
-  })
   function next() {
     game_2048.gen()
   }
@@ -120,6 +117,20 @@
     ],
     shortcuts: {
       'left': ['']
+    },
+    shortcut: {
+      events: {
+        keyboard: (e) => {
+          e.preventDefault();
+          if(e.key === 'ArrowLeft') game_2048.push('left')
+          if(e.key === 'ArrowRight') game_2048.push('right')
+          if(e.key === 'ArrowUp') game_2048.push('up')
+          if(e.key === 'ArrowDown') game_2048.push('down')
+        },
+      },
+      enable: function() {
+        window.addEventListener('keyup', this.events.keyboard);
+      }
     },
     init: function() {
       const rootEl = document.getElementById('container');
@@ -143,6 +154,7 @@
       }
       this.content = matrix;
       console.log('this.content', this.content)
+      this.shortcut.enable();
     },
     update: function(el, value) {
       el.children[0].innerHTML = value
