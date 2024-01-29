@@ -35,6 +35,10 @@
     align-items: center;
     font-size: 24px;
   }
+  .col,
+  .row {
+    transition: .2s ease-in-out;
+  }
   .col[data-col="0"] {
     transform: translateX(var(--offset-0));
   }
@@ -93,6 +97,9 @@
 </body>
 <script>
   const GRID = 4
+  window.addEventListener('keyup', (e) => {
+    console.log('e', e)
+  })
   function next() {
     game_2048.gen()
   }
@@ -111,6 +118,9 @@
       '#ffae17',
       '#ff5117',
     ],
+    shortcuts: {
+      'left': ['']
+    },
     init: function() {
       const rootEl = document.getElementById('container');
       rootEl.replaceChildren();
@@ -125,8 +135,8 @@
           childGridEl.classList = 'grid row'
           childGridEl.setAttribute('data-row', `${i}`)
           childGridEl.innerHTML = `${0}`
-          row.push(childGridEl)
           parentGridEl.appendChild(childGridEl);
+          row.push(parentGridEl)
           rootEl.appendChild(parentGridEl)    
         }
         matrix.push(row);
@@ -135,8 +145,8 @@
       console.log('this.content', this.content)
     },
     update: function(el, value) {
-      el.innerHTML = value
-      el.style.backgroundColor = this.color[value]
+      el.children[0].innerHTML = value
+      el.children[0].style.backgroundColor = this.color[value]
     },
     gen: function() {
       const zeros = this.getZeros();
@@ -151,16 +161,30 @@
     },
     getZeros: function() {
       const zeroDivs = []
-      this.content.forEach(row => row.forEach(col => col.innerHTML === '0' && zeroDivs.push(col)))
+      this.content.forEach(row => row.forEach(col => col.children[0].innerHTML === '0' && zeroDivs.push(col)))
       return zeroDivs
     },
     reset: function() {
       this.init()
     },
+    transpose: function(matrix) {
+      const preProcess = [];
+      for(let j = 0; j < GRID; j++) {
+        const col = [];
+        for(let i = 0; i < GRID; i++) {
+          col.push(matrix[i][j])
+        }
+        preProcess.push(col);
+      }
+      return preProcess;
+    },
     reverse: function(matrix) {
       for(let i = 0; i < GRID; i++) {
         for(let j = 0; j < GRID / 2; j++) {
-          [matrix[i][j], matrix[i][GRID - j]] = [matrix[i][GRID - j], matrix[i][j]]
+          const temp = matrix[i][j];
+          matrix[i][j] = matrix[i][GRID - j - 1];
+          matrix[i][GRID - j - 1] = temp;
+          //[matrix[i][j], matrix[i][GRID - j - 1]] = [matrix[i][GRID - j - 1], matrix[i][j]]
         }
       }
     },
@@ -169,33 +193,41 @@
     */
     push: function(direction) {
       const preProcess = [];
-      switch(direction) {
-        case 'up':
-        case 'down':
-          for(let j = 0; j < GRID; j++) {
-            const col = [];
-            for(let i = 0; i < GRID; i++) {
-              col.push(this.content[i][j])
-            }
-            preProcess.push(col);
-          }
-          break;
-        default: 
-          preProcess.splice(0, preProcess.length, ...this.content.slice());
+      // 转置
+      if(['up', 'down'].includes(direction)) {
+        preProcess.splice(0, preProcess.length, ...this.transpose(this.content.slice()));
+      } else {
+        preProcess.splice(0, preProcess.length, ...this.content.slice());
       }
+      // 对齐
       if( ['right', 'down'].includes(direction)) {
         this.reverse(preProcess);
       }
+      //preProcess.forEach((row, i) => row.forEach((col, j) => console.log(i, j, col.children[0].innerHTML)))
       preProcess.forEach(row => row.forEach((col, index) => {
-        if(col.innerHTML !== '0') return;
+        if(col.children[0].innerHTML !== '0') return;
         let i = index + 1;
-        
-        while(i < GRID && row[i].innerHTML === '0') {i++; console.log('row[i]', i, row[i])};
-        if(i < GRID) [col, row[i]] = [row[i], col];
+        while(i < GRID && row[i].children[0].innerHTML === '0') i++
+        if(i < GRID) {
+          const temp = row[i];
+          row[i] = row[index];
+          row[index] = temp;
+          //[row[index], row[i]] = [row[i], row[index]]
+        }
       }))
+      if(['right', 'down'].includes(direction)) {
+        this.reverse(preProcess);
+      }
+      if(['up', 'down'].includes(direction)) {
+        preProcess.splice(0, preProcess.length, ...this.transpose(preProcess));
+      }
+      preProcess.forEach((row, i) => row.forEach((col, j) => console.log(i, j, col.children[0].innerHTML)))
       this.content.splice(0, this.content.length, ...preProcess.slice())
-      console.log('this.content', this.content)
-      //this.content.forEach(row => row.forEach(col => this.update(col, parseInt(col.innerHTML))))
+      this.content.forEach((row, i) => row.forEach((col, j) => {
+        col.children[0].dataset.row = `${i}`
+        col.dataset.col = `${j}`
+        //this.update(col, parseInt(col.innerHTML))
+      }))
     },
     merge: function() {
 
