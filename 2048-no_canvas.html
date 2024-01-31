@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>2048试验</title>
 </head>
+<link rel="stylesheet" href="./2048-assets.css">
 <style>
   :root {
     --offset: 5px;
@@ -79,11 +80,7 @@
   }
 </style>
 <body>
-  <div id="container">
-    <!-- <div class="col" data-col="3">
-      <div class="row grid" data-row="2"></div>
-    </div> -->
-  </div>
+  <div id="container"></div>
   <div style="display: flex; justify-content: center; align-items: center">
     <div class="btn" onclick="game_2048.push('left')">Left</div>
     <div class="btn" onclick="game_2048.push('right')">Right</div>
@@ -95,10 +92,14 @@
   <br>
   <div class="btn" onclick="reset()">Reset</div>
 </body>
+<!-- TODOs: 出现个数 -->
+<!-- 坍缩：随机传送 -->
+<!-- 棋盘玩法 -->
+<!-- 倒计时玩法 -->
 <script>
   const GRID = 4
   function next() {
-    game_2048.gen()
+    game_2048.gen([1, 3])
   }
   function reset() {
     game_2048.reset()
@@ -108,15 +109,22 @@
     history: [],
     color: [
       '',
-      '#fff',
+      '#888',
       '#e2ff3d',
       '#458fff',
       '#e9d4ff',
       '#ffae17',
       '#ff5117',
     ],
-    shortcuts: {
-      'left': ['']
+    role: {
+      'vanguard': { melee: true },
+      'guard': { melee: true },
+      'defender': { melee: true },
+      'specialist': { melee: true },
+      'caster': { melee: false },
+      'sniper': { melee: false },
+      'medic': { melee: false },
+      'supporter': { melee: false },
     },
     shortcut: {
       events: {
@@ -132,6 +140,23 @@
         window.addEventListener('keyup', this.events.keyboard);
       }
     },
+    getRandomRole: function() {
+      const roleArr = Object.keys(this.role);
+      const roleName = roleArr[~~(Math.random() * roleArr.length)]
+      return {role: roleName, melee: this.role[roleName].melee}
+    },
+    _createElement: function(root, row, col) {
+      const parentGridEl = document.createElement('div');
+      parentGridEl.classList = 'col'
+      parentGridEl.setAttribute('data-col', `${col}`)
+      const childGridEl = document.createElement('div');
+      childGridEl.classList = 'grid row'
+      childGridEl.setAttribute('data-row', `${row}`)
+      childGridEl.innerHTML = `${0}`
+      parentGridEl.appendChild(childGridEl);
+      root.appendChild(parentGridEl)
+      return parentGridEl;
+    },
     init: function() {
       const rootEl = document.getElementById('container');
       rootEl.replaceChildren();
@@ -139,37 +164,36 @@
       for(let i = 0; i < GRID; i++) {
         const row = []
         for(let j = 0; j < GRID; j++) {
-          const parentGridEl = document.createElement('div');
-          parentGridEl.classList = 'col'
-          parentGridEl.setAttribute('data-col', `${j}`)
-          const childGridEl = document.createElement('div');
-          childGridEl.classList = 'grid row'
-          childGridEl.setAttribute('data-row', `${i}`)
-          childGridEl.innerHTML = `${0}`
-          parentGridEl.appendChild(childGridEl);
+          const parentGridEl = this._createElement(rootEl, i, j)
           row.push(parentGridEl)
-          rootEl.appendChild(parentGridEl)    
         }
         matrix.push(row);
       }
       this.content = matrix;
-      console.log('this.content', this.content)
       this.shortcut.enable();
     },
-    update: function(el, value) {
+    update: function(el, value, options) {
       el.children[0].innerHTML = value
       el.children[0].style.backgroundColor = this.color[value]
+      if(options) {
+        if(options.melee) el.setAttribute('data-melee', `${options.melee ? 1 : 0}`)
+        if(options.role) el.setAttribute('data-role', `${options.role}`)
+      }
     },
-    gen: function() {
+    /**
+    * @param {[min: number, max: number]} range
+    */
+    gen: function(range) {
       const zeros = this.getZeros();
       if(zeros.length === 0) {
         alert('游戏结束')
         console.log('游戏结束')
         return;
       }
+      const [min, max] = range
       const index = Math.floor(Math.random() * zeros.length)
-      const level = Math.floor(Math.random() * 6) + 1
-      this.update(zeros[index], level)
+      const level = Math.floor(Math.random() * (max - min)) + min
+      this.update(zeros[index], level, this.getRandomRole())
     },
     getZeros: function() {
       const zeroDivs = []
@@ -190,7 +214,7 @@
       }
       return preProcess;
     },
-    reverse: function(matrix) {
+    _reverse: function(matrix) {
       for(let i = 0; i < GRID; i++) {
         for(let j = 0; j < GRID / 2; j++) {
           const temp = matrix[i][j];
@@ -199,6 +223,41 @@
           //[matrix[i][j], matrix[i][GRID - j - 1]] = [matrix[i][GRID - j - 1], matrix[i][j]]
         }
       }
+    },
+    _push: function(preProcess) {
+      preProcess.forEach(row => row.forEach((col, index) => {
+        if(col.children[0].innerHTML !== '0') return;
+        let i = index + 1;
+        while(i < GRID && row[i].children[0].innerHTML === '0') i++
+        if(i < GRID) {
+          const temp = row[i];
+          row[i] = row[index];
+          row[index] = temp;
+          //[row[index], row[i]] = [row[i], row[index]]
+        }
+      }))
+    },
+    _merge: function(preProcess, direction) {
+      preProcess.forEach((row, rowIndex) => row.forEach((col, index) => {
+        if(index + 1 === GRID) return;
+        if(col.children[0].innerHTML === '0') return;
+        if(col.children[0].innerHTML === row[index + 1].children[0].innerHTML) {
+          const level = parseInt(col.children[0].innerHTML);
+          if(level === 6) return;
+          this.update(col, level + 1)
+          const rootEl = document.getElementById('container')
+          const [mergedEl] = row.splice(index + 1, 1,this._createElement(rootEl, rowIndex, index + 1))
+          switch(direction) {
+            case 'left': mergedEl.dataset.col = `${index}`; break;
+            case 'right': mergedEl.dataset.col = `${GRID - index - 1}`; break;
+            case 'down': mergedEl.children[0].dataset.row = `${GRID - index - 1}`; break;
+            case 'up': mergedEl.children[0].dataset.row = `${index}`; break;
+          }
+          setTimeout(() => {
+            mergedEl.remove();
+          }, 200)
+        }
+      }))
     },
     /**
     * @param {'up' | 'down' | 'left' | 'right'} direction
@@ -213,27 +272,19 @@
       }
       // 对齐
       if( ['right', 'down'].includes(direction)) {
-        this.reverse(preProcess);
+        this._reverse(preProcess);
       }
       //preProcess.forEach((row, i) => row.forEach((col, j) => console.log(i, j, col.children[0].innerHTML)))
-      preProcess.forEach(row => row.forEach((col, index) => {
-        if(col.children[0].innerHTML !== '0') return;
-        let i = index + 1;
-        while(i < GRID && row[i].children[0].innerHTML === '0') i++
-        if(i < GRID) {
-          const temp = row[i];
-          row[i] = row[index];
-          row[index] = temp;
-          //[row[index], row[i]] = [row[i], row[index]]
-        }
-      }))
+      this._push(preProcess);
+      this._merge(preProcess, direction)
+      this._push(preProcess);
       if(['right', 'down'].includes(direction)) {
-        this.reverse(preProcess);
+        this._reverse(preProcess);
       }
       if(['up', 'down'].includes(direction)) {
         preProcess.splice(0, preProcess.length, ...this.transpose(preProcess));
       }
-      preProcess.forEach((row, i) => row.forEach((col, j) => console.log(i, j, col.children[0].innerHTML)))
+      //preProcess.forEach((row, i) => row.forEach((col, j) => console.log(i, j, col.children[0].innerHTML)))
       this.content.splice(0, this.content.length, ...preProcess.slice())
       this.content.forEach((row, i) => row.forEach((col, j) => {
         col.children[0].dataset.row = `${i}`
@@ -241,9 +292,6 @@
         //this.update(col, parseInt(col.innerHTML))
       }))
     },
-    merge: function() {
-
-    }
   }
   game_2048.init()
 </script>

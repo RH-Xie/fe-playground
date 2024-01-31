@@ -1,0 +1,38 @@
+:root {
+  --class-offset-y: 68px;
+  --size: 240px;
+}
+.col {
+  position: relative;
+}
+.col[data-role] .sprite {
+  width: 80px;
+  height: 80px;
+  position: absolute;
+  background-image: url(./img/classes_cleaned.png);
+  /* background-size: var(--size) var(--size); */
+}
+.col[data-role="vanguard"] .sprite {
+  background-position: 0 var(--class-offset-y), var(--size) calc(var(--size) + var(--class-offset-y)) ;
+}
+.col[data-role="defender"] {
+  background-position: 0 calc(var(--class-offset-y) + 240px);
+}
+.col[data-role="guard"]::before {
+  background-position: 240px calc(var(--class-offset-y) + 480px);
+}
+.col[data-role="specialist"] {
+  background-position: 0 calc(var(--class-offset-y) + 480px);
+}
+.col[data-role="caster"] {
+  background-position: calc(480px) calc(var(--class-offset-y) + 480px);
+}
+.col[data-role="sniper"] {
+  background-position: calc(240px) calc(var(--class-offset-y) + 240px);
+}
+.col[data-role="medic"] {
+  background-position: calc(480px) calc(var(--class-offset-y) + 240px);
+}
+.col[data-role="supporter"] {
+  background-position: 240px calc(var(--class-offset-y));
+}
