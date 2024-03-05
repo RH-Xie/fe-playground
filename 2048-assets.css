@@ -1,6 +1,5 @@
 :root {
-  --class-offset-y: 68px;
-  --size: 240px;
+  --size: 222px;
 }
 .col {
   position: relative;
